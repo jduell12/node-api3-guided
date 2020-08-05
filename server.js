@@ -3,7 +3,6 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 
 const hubsRouter = require("./hubs/hubs-router.js");
-
 const server = express();
 
 //Global middleware
@@ -13,7 +12,8 @@ server.use(helmet());
 server.use(logger);
 
 //local middleware
-server.use("/api/hubs", hubsRouter);
+// server.use("/api/hubs", hubsRouter);
+server.use("/api/hubs", checkPass("mellon"), hubsRouter);
 
 server.get("/", (req, res) => {
   const nameInsert = req.name ? ` ${req.name}` : "";
@@ -26,10 +26,24 @@ server.get("/", (req, res) => {
 
 //middleware
 function logger(req, res, next) {
-  //console long a HTTPmethod request to URLhit
-  console.log(`a ${req.method} request to ${req.url}`);
+  const name = req.headers.name;
+  req.name = name;
+
+  //console log a name, HTTPmethod request to URLhit
+  console.log(`${req.name} a ${req.method} request to ${req.url}`);
 
   next();
+}
+
+//function returns middleware function
+function checkPass(password) {
+  return function (req, res, next) {
+    if (req.headers.authorization === password) {
+      next();
+    } else {
+      res.status(401).json({ you: "can not pass" });
+    }
+  };
 }
 
 module.exports = server;
