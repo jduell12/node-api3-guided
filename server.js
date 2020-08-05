@@ -13,7 +13,15 @@ server.use(logger);
 
 //local middleware
 // server.use("/api/hubs", hubsRouter);
-server.use("/api/hubs", checkPass("mellon"), hubsRouter);
+server.use("/api/hubs", checkPass("allgood"), hubsRouter);
+
+//example login point
+server.post("/login", (req, res) => {
+  const creds = req.body;
+
+  //validate checking against database
+  res.status(200).json({ token: "allgood" });
+});
 
 server.get("/", (req, res) => {
   const nameInsert = req.name ? ` ${req.name}` : "";
