@@ -8,9 +8,11 @@ const server = express();
 
 //Global middleware
 server.use(express.json());
-server.use(morgan("combined"));
+// server.use(morgan("dev"));
 server.use(helmet());
+server.use(logger);
 
+//local middleware
 server.use("/api/hubs", hubsRouter);
 
 server.get("/", (req, res) => {
@@ -21,5 +23,13 @@ server.get("/", (req, res) => {
     <p>Welcome${nameInsert} to the Lambda Hubs API</p>
     `);
 });
+
+//middleware
+function logger(req, res, next) {
+  //console long a HTTPmethod request to URLhit
+  console.log(`a ${req.method} request to ${req.url}`);
+
+  next();
+}
 
 module.exports = server;
